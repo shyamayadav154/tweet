@@ -68,6 +68,7 @@ const FollowingPosts = () => {
         />
     );
 };
+
 const RecentPosts = () => {
     const tweets = api.tweet.infinteFeed.useInfiniteQuery({}, {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -93,7 +94,7 @@ type InfiniteTweetListProps = {
     fetchNewTweets: () => void;
 };
 
-const InfiniteTweetList = (
+export const InfiniteTweetList = (
     { tweets, isLoading, isError, fetchNewTweets, hasMore }:
         InfiniteTweetListProps,
 ) => {
@@ -122,6 +123,7 @@ const TweetCard = (
     const toggleLike = api.tweet.toggleLike.useMutation({
         onSuccess: () => {
             void trpcUtils.tweet.infinteFeed.invalidate();
+            void trpcUtils.tweet.infiniteProfileFeed.invalidate();
         },
     });
 
@@ -185,10 +187,10 @@ const HeartButtonAnimated = (
                 onClick={() => {
                     onClick();
                     if (likedByMe) {
-                        heartRef.current?.goToAndStop(1,true)
+                        heartRef.current?.goToAndStop(1, true);
                         return;
                     }
-                    heartRef.current?.goToAndPlay(35,true);
+                    heartRef.current?.goToAndPlay(35, true);
                 }}
                 lottieRef={heartRef}
                 animationData={heartAnimation}

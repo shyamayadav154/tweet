@@ -54,8 +54,8 @@ const Form = () => {
     if (session.status !== "authenticated") return null;
 
     return (
-        <form action="" onSubmit={handleSubmit}>
-            <div className="flex gap-4 p-4 border-b">
+        <form action="" onSubmit={handleSubmit} className="border-b pb-4" >
+            <div className="flex gap-4 p-4 ">
                 <ProfileImage src={session.data.user.image} />
 
                 <textarea
@@ -64,8 +64,10 @@ const Form = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="what's happeing?"
-                    className="flex-grow resize-none overflow-hidden p-4 text-lg outline-none"
+                    className="flex-grow focus:border-b resize-none overflow-hidden pb-4  text-lg outline-none"
                 />
+            </div>
+            <div className="flex justify-end pr-4">
                 <Button className="self-end">
                     Tweet
                 </Button>
