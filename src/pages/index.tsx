@@ -5,23 +5,69 @@ import NewTweetForm from "~/components/NewTweetForm";
 import ProfileImage from "~/components/ProfileImage";
 import { api, RouterOutputs } from "~/utils/api";
 import { HeartIcon } from "@heroicons/react/24/outline";
+import * as Tabs from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import heartAnimation from "../assets/heart-fav.json";
+import { useEffect, useRef } from "react";
 
 dayjs.extend(relativeTime);
 
 const Home: NextPage = () => {
     return (
-        <>
-            <header className="sticky top-0 border-b bg-white z-10">
-                <h1 className="mb-2 px-4 py-2 text-lg font-bold">Home</h1>
+        <Tabs.Root defaultValue="recent">
+            <header className="sticky top-0 backdrop-blur-lg bg-white/80  z-10">
+                <Tabs.List>
+                    <h1 className="mb-2 px-4 py-2 text-lg font-bold">Home</h1>
+
+                    <div className="grid border-b   grid-cols-2">
+                        <Tabs.Trigger
+                            className="transition-colors hover:bg-gray-100 group py-2  "
+                            value="recent"
+                        >
+                            <span className="group-data-[state=active]:border-blue-500 group-data-[state=active]:text-black text-gray-500 py-2 border-transparent  border-b-2">
+                                Recents
+                            </span>
+                        </Tabs.Trigger>
+                        <Tabs.Trigger
+                            className="hover:bg-gray-50 group transition-colors duration-200 py-2"
+                            value="following"
+                        >
+                            <span className="group-data-[state=active]:border-blue-500 text-gray-500 group-data-[state=active]:text-black border-b-2 pb-2   border-transparent">
+                                Following
+                            </span>
+                        </Tabs.Trigger>
+                    </div>
+                </Tabs.List>
             </header>
             <NewTweetForm />
-            <RecentPosts />
-        </>
+            <Tabs.Content value="recent">
+                <RecentPosts />
+            </Tabs.Content>
+            <Tabs.Content value="following">
+                <FollowingPosts />
+            </Tabs.Content>
+        </Tabs.Root>
     );
 };
 
+const FollowingPosts = () => {
+    const tweets = api.tweet.infinteFeed.useInfiniteQuery({
+        onlyFollowing: true,
+    }, {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+    return (
+        <InfiniteTweetList
+            tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
+            isError={tweets.isError}
+            isLoading={tweets.isLoading}
+            hasMore={!!tweets.hasNextPage}
+            fetchNewTweets={tweets.fetchNextPage}
+        />
+    );
+};
 const RecentPosts = () => {
     const tweets = api.tweet.infinteFeed.useInfiniteQuery({}, {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -105,7 +151,7 @@ const TweetCard = (
                 <p>
                     {content}
                 </p>
-                <HeartButton
+                <HeartButtonAnimated
                     likedByMe={likedByMe}
                     likeCount={likeCount}
                     isLoading={toggleLike.isLoading}
@@ -123,6 +169,36 @@ type HeartButtonProps = {
     onClick: () => void;
 };
 
+const HeartButtonAnimated = (
+    { likedByMe, likeCount, isLoading, onClick }: HeartButtonProps,
+) => {
+    const heartRef = useRef<LottieRefCurrentProps>(null);
+
+    useEffect(() => {
+        if (likedByMe) {
+            heartRef.current?.goToAndStop(138, true);
+        }
+    }, []);
+    return (
+        <div className="overflow-hidden h-10 w-10 hover:bg-pink-100 cursor-pointer grid place-content-center rounded-full">
+            <Lottie
+                onClick={() => {
+                    onClick();
+                    if (likedByMe) {
+                        heartRef.current?.goToAndStop(1,true)
+                        return;
+                    }
+                    heartRef.current?.goToAndPlay(35,true);
+                }}
+                lottieRef={heartRef}
+                animationData={heartAnimation}
+                loop={false}
+                autoplay={false}
+                className="scale-[3]"
+            />
+        </div>
+    );
+};
 const HeartButton = (
     { likedByMe, likeCount, isLoading, onClick }: HeartButtonProps,
 ) => {

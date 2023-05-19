@@ -14,7 +14,7 @@ function SideNav() {
                 {!!user &&
                     (
                         <li>
-                            <Link href={`/profiles/${user.id}`}>Profile</Link>
+                            <Link href={`/profile/${user.id}`}>Profile</Link>
                         </li>
                     )}
                 {!!user
