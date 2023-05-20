@@ -9,6 +9,7 @@ export function ssgHelper() {
         ctx: createInnerTRPCContext(
             {
                 session: null,
+                revalidateSSG:null
             },
         ),
         transformer: superjson,

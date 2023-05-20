@@ -57,7 +57,6 @@ const Form = () => {
         <form action="" onSubmit={handleSubmit} className="border-b pb-4" >
             <div className="flex gap-4 p-4 ">
                 <ProfileImage src={session.data.user.image} />
-
                 <textarea
                     ref={inputRef}
                     style={{ height: 0 }}
