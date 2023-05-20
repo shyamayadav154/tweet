@@ -10,6 +10,45 @@ import {
 } from "~/server/api/trpc";
 
 export const tweetRouter = createTRPCRouter({
+    getComments: publicProcedure.input(z.object({
+        tweetId: z.string(),
+    })).query(async ({ input, ctx }) => {
+        const comments = await ctx.prisma.comment.findMany({
+            orderBy: {
+                createdAt: "desc",
+            },
+            where: {
+                tweetId: input.tweetId,
+            },
+            select: {
+                id: true,
+                createdAt: true,
+                content: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                    },
+                },
+            },
+        });
+        return comments;
+    }),
+    addComment: protectedProcedure.input(z.object({
+        tweetId: z.string(),
+        content: z.string(),
+    })).mutation(async ({ input, ctx }) => {
+        const currentUserId = ctx.session.user.id;
+        const comment = await ctx.prisma.comment.create({
+            data: {
+                content: input.content,
+                tweetId: input.tweetId,
+                userId: currentUserId,
+            },
+        });
+        return comment;
+    }),
     toggleLike: protectedProcedure.input(z.object({
         id: z.string(),
     })).mutation(async ({ input, ctx }) => {
@@ -33,6 +72,33 @@ export const tweetRouter = createTRPCRouter({
             });
             return { addedLike: false };
         }
+    }),
+    getSingleTweet: publicProcedure.input(z.object({
+        postId: z.string(),
+    })).query(async ({ input: { postId }, ctx }) => {
+        const post = ctx.prisma.tweet.findUnique({
+            where: {
+                id: postId,
+            },
+            select: {
+                id: true,
+                createdAt: true,
+                content: true,
+                _count: {
+                    select: {
+                        likes: true,
+                    },
+                },
+                user: {
+                    select: {
+                        id: true,
+                        image: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+        return post;
     }),
     infiniteProfileFeed: publicProcedure.input(z.object({
         userId: z.string(),

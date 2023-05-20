@@ -8,6 +8,7 @@ import heartAnimation from "../assets/heart-fav.json";
 import { api, type RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useRouter } from "next/router";
 dayjs.extend(relativeTime);
 
 type Tweet = RouterOutputs["tweet"]["infinteFeed"]["tweets"][0];
@@ -52,6 +53,7 @@ const TweetCard = ({
     isLiked: likedByMe,
 }: Tweet) => {
     const trpcUtils = api.useContext();
+    const router = useRouter();
     const toggleLike = api.tweet.toggleLike.useMutation({
         onSuccess: () => {
             void trpcUtils.tweet.infinteFeed.invalidate();
@@ -64,26 +66,45 @@ const TweetCard = ({
         });
     }
     return (
-        <li className="flex gap-4 border-b px-4 py-4">
-            <Link href={`/profile/${user.id}`}>
-                <ProfileImage src={user.image} />
-            </Link>
-            <div className="flex flex-grow flex-col">
-                <div className="flex gap-1">
-                    <Link className="hover:underline" href={`/profiles/${user.id}`}>
-                        {user.name}
-                    </Link>
-                    <span className="text-gray-500">&#x2022;</span>
-                    <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
+        <li>
+            <article
+                onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/post/${id}`);
+                }}
+                className="flex cursor-pointer hover:bg-gray-50 gap-4 border-b px-4 py-4"
+            >
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/profile/${user.id}`);
+                    }}
+                >
+                    <ProfileImage src={user.image} />
+                </button>
+                <div className="flex flex-grow flex-col">
+                    <div className="flex gap-1">
+                        <span
+                            className="hover:underline"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/profile/${user.id}`);
+                            }}
+                        >
+                            {user.name}
+                        </span>
+                        <span className="text-gray-500">&#x2022;</span>
+                        <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
+                    </div>
+                    <p>{content}</p>
+                    <HeartButtonAnimated
+                        likedByMe={likedByMe}
+                        likeCount={likeCount}
+                        isLoading={toggleLike.isLoading}
+                        onClick={handleToggleLike}
+                    />
                 </div>
-                <p>{content}</p>
-                <HeartButtonAnimated
-                    likedByMe={likedByMe}
-                    likeCount={likeCount}
-                    isLoading={toggleLike.isLoading}
-                    onClick={handleToggleLike}
-                />
-            </div>
+            </article>
         </li>
     );
 };
@@ -112,7 +133,8 @@ const HeartButtonAnimated = ({
         <div>
             <button
                 disabled={isLoading}
-                onClick={() => {
+                onClick={(e) => {
+                    e.stopPropagation();
                     onClick();
                     if (likedByMe) {
                         heartRef.current?.goToAndStop(1, true);
