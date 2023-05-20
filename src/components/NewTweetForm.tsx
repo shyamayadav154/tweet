@@ -54,7 +54,7 @@ const Form = () => {
     if (session.status !== "authenticated") return null;
 
     return (
-        <form action="" onSubmit={handleSubmit} className="border-b pb-4" >
+        <form action="" onSubmit={handleSubmit} className="border-b pb-4">
             <div className="flex gap-4 p-4 ">
                 <ProfileImage src={session.data.user.image} />
                 <textarea
@@ -66,8 +66,8 @@ const Form = () => {
                     className="flex-grow focus:border-b resize-none overflow-hidden pb-4  text-lg outline-none"
                 />
             </div>
-            <div className="flex justify-end pr-4">
-                <Button className="self-end">
+            <div className="flex justify-end px-4">
+                <Button disabled={!inputValue} className="self-end">
                     Tweet
                 </Button>
             </div>
