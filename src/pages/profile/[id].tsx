@@ -10,11 +10,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { VscArrowLeft } from "react-icons/vsc";
 import Button from "~/components/Button";
+import InfiniteTweetList from "~/components/InfiniteTweetList";
 import ProfileImage from "~/components/ProfileImage";
 import { ssgHelper } from "~/server/api/ssgHelper";
 import { api } from "~/utils/api";
 import { getPulral } from "~/utils/profile";
-import { InfiniteTweetList } from "..";
 
 const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     id,
@@ -38,7 +38,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         },
     });
 
-    if (status !== "success") return <div>loading...</div>;
+    if (status !== "success") return <div>Loading...</div>;
 
     if (profile == null || profile.name == null) {
         return <ErrorPage statusCode={404} />;
