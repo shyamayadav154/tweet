@@ -1,7 +1,7 @@
 import Button from "./Button";
 import { useSession } from "next-auth/react";
 import {
-    FormEvent,
+    type FormEvent,
     useCallback,
     useLayoutEffect,
     useRef,
@@ -32,7 +32,7 @@ const Form = () => {
         onSuccess: (newTweet) => {
             console.log(newTweet);
             setInputValue("");
-            trpcUtils.tweet.infinteFeed.invalidate();
+            void trpcUtils.tweet.infinteFeed.invalidate();
         },
     });
     function handleSubmit(e: FormEvent) {

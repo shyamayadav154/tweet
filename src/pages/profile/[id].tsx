@@ -1,4 +1,4 @@
-import {
+import type {
     GetStaticPaths,
     GetStaticPropsContext,
     InferGetStaticPropsType,
@@ -11,6 +11,7 @@ import Link from "next/link";
 import { VscArrowLeft } from "react-icons/vsc";
 import Button from "~/components/Button";
 import InfiniteTweetList from "~/components/InfiniteTweetList";
+import LoadingSpinner from "~/components/LoadingSpinner";
 import ProfileImage from "~/components/ProfileImage";
 import { ssgHelper } from "~/server/api/ssgHelper";
 import { api } from "~/utils/api";
@@ -38,7 +39,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         },
     });
 
-    if (status !== "success") return <div>Loading...</div>;
+    if (status !== "success") return <LoadingSpinner />;
 
     if (profile == null || profile.name == null) {
         return <ErrorPage statusCode={404} />;
@@ -51,7 +52,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </Head>
 
             <header className="sticky top-0 z-10 flex items-center gap-2 border-b bg-white p-2">
-                <Link href="..">
+                <Link className="p-2 hover:bg-gray-50 rounded-full" href="..">
                     <VscArrowLeft className="h-6 w-6 text-gray-600" />
                 </Link>
                 {profile.image && <ProfileImage src={profile.image} />}

@@ -1,6 +1,7 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { type NextPage } from "next";
 import InfiniteTweetList from "~/components/InfiniteTweetList";
+import LoadingSpinner from "~/components/LoadingSpinner";
 import NewTweetForm from "~/components/NewTweetForm";
 import { api } from "~/utils/api";
 
@@ -11,12 +12,12 @@ const Home: NextPage = () => {
                 <Tabs.List>
                     <h1 className="mb-2 px-4 py-2 text-lg font-bold">Home</h1>
 
-                    <div className="grid grid-cols-2   border-b">
+                    <div className="grid grid-cols-2 font-bold border-b">
                         <Tabs.Trigger
-                            className="group py-2 transition-colors hover:bg-gray-100  "
+                            className="group py-2 transition-colors b hover:bg-gray-100  "
                             value="recent"
                         >
-                            <span className="border-b-2 border-transparent py-2 text-gray-500 group-data-[state=active]:border-blue-500  group-data-[state=active]:text-black">
+                            <span className="border-b-2 border-transparent py-2.5 text-gray-500 group-data-[state=active]:border-blue-500  group-data-[state=active]:text-black">
                                 Recents
                             </span>
                         </Tabs.Trigger>
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
                             className="group py-2 transition-colors duration-200 hover:bg-gray-50"
                             value="following"
                         >
-                            <span className="border-b-2 border-transparent pb-2 text-gray-500 group-data-[state=active]:border-blue-500   group-data-[state=active]:text-black">
+                            <span className="border-b-2 border-transparent pb-2.5 text-gray-500 group-data-[state=active]:border-blue-500   group-data-[state=active]:text-black">
                                 Following
                             </span>
                         </Tabs.Trigger>
@@ -69,6 +70,8 @@ const RecentPosts = () => {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
         },
     );
+    if(tweets.isLoading) return <LoadingSpinner />;
+    if(tweets.isError) return <div>Error...</div>;
     return (
         <InfiniteTweetList
             tweets={tweets.data?.pages.flatMap((page) => page.tweets)}

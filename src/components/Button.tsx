@@ -1,4 +1,7 @@
-import React, { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import React, {
+    type ButtonHTMLAttributes,
+    type DetailedHTMLProps,
+} from "react";
 
 type ButtonProps =
     & {

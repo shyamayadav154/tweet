@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { VscArrowLeft } from "react-icons/vsc";
@@ -7,9 +7,6 @@ import ProfileImage from "~/components/ProfileImage";
 import { ssgHelper } from "~/server/api/ssgHelper";
 import { api } from "~/utils/api";
 import { getPulral } from "~/utils/profile";
-import { useSession } from "next-auth/react";
-import TextAreaAutoSize from "~/components/TextAreaAutoSize";
-import { useState } from "react";
 import CommentSection from "~/components/CommentSection";
 
 type PostPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -25,8 +22,8 @@ const PostPage = ({ id }: PostPageProps) => {
                 <title>Twet - Post</title>
             </Head>
             <header className="sticky top-0 z-10 p-2 backdrop-blur-lg bg-white/80 flex gap-5 items-center">
-                <Link href="..">
-                    <VscArrowLeft className="h-6 w-6 text-gray-600" />
+                <Link className="rounded-full p-2 hover:bg-gray-100"  href="..">
+                    <VscArrowLeft className="h-5 w-5 text-gray-600" />
                 </Link>
 
                 <h2 className="font-medium text-xl">Tweet</h2>
@@ -44,9 +41,9 @@ const PostPage = ({ id }: PostPageProps) => {
                             </span>
                         </div>
                     </div>
-                    <p>
+                    <pre className="font-sans">
                         {postInfo.data.content}
-                    </p>
+                    </pre>
                     <div className="text-gray-500 space-x-1">
                         <span>
                             {dayjs(postInfo.data.createdAt).format("h:mm A")}
@@ -65,7 +62,7 @@ const PostPage = ({ id }: PostPageProps) => {
                         </span>
                     </div>
                 </article>
-                <CommentSection  id={id} />
+                <CommentSection postUser={postInfo.data.user.name ?? ""} id={id} />
             </main>
         </>
     );

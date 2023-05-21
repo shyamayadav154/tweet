@@ -3,7 +3,7 @@ type ProfileImageProps = {
     src?: string | null;
     className?: string;
 };
-const ProfileImage = ({ src, className }: ProfileImageProps) => {
+const ProfileImage = ({ src, className='' }: ProfileImageProps) => {
     return (
         <div
             className={`relative h-10 w-10 overflow-hidden rounded-full ${className}`}

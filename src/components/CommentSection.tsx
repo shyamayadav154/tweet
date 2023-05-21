@@ -1,17 +1,17 @@
 import { useSession } from "next-auth/react";
 import React, {
-    FormEvent,
+    type FormEvent,
     useCallback,
     useLayoutEffect,
     useRef,
     useState,
 } from "react";
-import { api, RouterOutputs } from "~/utils/api";
+import { api,type RouterOutputs } from "~/utils/api";
 import ProfileImage from "./ProfileImage";
 import Button from "./Button";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useRouter } from "next/router";
+import LoadingSpinner from "./LoadingSpinner";
 dayjs.extend(relativeTime);
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
@@ -20,10 +20,12 @@ function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
     textArea.style.height = `${textArea.scrollHeight}px`;
 }
 
-function CommentSection({ id, name }: { id: string }) {
+function CommentSection({ id, postUser }: { id: string; postUser: string }) {
     return (
         <div>
-            <NewCommentForm id={id} />
+            <div className="px-5 border-b">
+                <NewCommentForm postUser={postUser} id={id} />
+            </div>
             <CommentList id={id} />
         </div>
     );
@@ -32,7 +34,7 @@ function CommentSection({ id, name }: { id: string }) {
 export default CommentSection;
 
 type CommentListProps = {
-    id: any;
+    id: string;
 };
 
 type Comment = RouterOutputs["tweet"]["getComments"][number];
@@ -41,23 +43,25 @@ const CommentList = ({ id }: CommentListProps) => {
     const { data: comments, isLoading } = api.tweet.getComments.useQuery({
         tweetId: id,
     });
-    if (isLoading) return <div>Loading...</div>;
-    if (!comments) return <div>Something went wrong.</div>;
+    if (isLoading) return <LoadingSpinner />;
+    if(!comments?.length) return <p>No comments found</p>;
     return (
         <ul className="">
-            {comments.map((comment) => <CommentCard key={comment.id} {...comment} />)}
+            {comments?.map((comment: Comment) => (
+                <CommentCard key={comment.id} {...comment} />
+            ))}
         </ul>
     );
 };
 
-const CommentCard = ({ id, createdAt, user, content }: Comment) => {
+const CommentCard = ({ createdAt, user, content }: Comment) => {
     return (
-        <li>
+        <li className="border-b px-5">
             <article
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
-                className="flex cursor-pointer hover:bg-gray-50 gap-4 border-b px-4 py-4"
+                className="flex cursor-pointer  gap-4   py-4"
             >
                 <button
                     onClick={(e) => {
@@ -69,7 +73,7 @@ const CommentCard = ({ id, createdAt, user, content }: Comment) => {
                 <div className="flex flex-grow flex-col">
                     <div className="flex gap-1">
                         <span
-                            className="hover:underline"
+                            className="hover:underline font-medium"
                             onClick={(e) => {
                                 e.stopPropagation();
                             }}
@@ -79,7 +83,7 @@ const CommentCard = ({ id, createdAt, user, content }: Comment) => {
                         <span className="text-gray-500">&#x2022;</span>
                         <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
                     </div>
-                    <p>{content}</p>
+                    <pre>{content}</pre>
                 </div>
             </article>
         </li>
@@ -88,14 +92,15 @@ const CommentCard = ({ id, createdAt, user, content }: Comment) => {
 
 type NewCommentFormProps = {
     id: string;
+    postUser: string;
+    closeModal?: () => void;
 };
 
-const NewCommentForm = ({ id }: NewCommentFormProps) => {
+export const NewCommentForm = (
+    { id, postUser, closeModal }: NewCommentFormProps,
+) => {
     const session = useSession();
     const trpcUtils = api.useContext();
-    const tweet = trpcUtils.tweet.getSingleTweet.getData({
-        postId: id,
-    });
     const [inputValue, setInputValue] = useState("");
     const [showReplying, setShowReplying] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -103,7 +108,11 @@ const NewCommentForm = ({ id }: NewCommentFormProps) => {
         onSuccess: (newTweet) => {
             console.log(newTweet);
             setInputValue("");
-            trpcUtils.tweet.getComments.invalidate();
+            void trpcUtils.tweet.getComments.invalidate();
+            void trpcUtils.tweet.infinteFeed.invalidate();
+            if (closeModal) {
+                closeModal();
+            }
         },
     });
     function handleSubmit(e: FormEvent) {
@@ -126,18 +135,18 @@ const NewCommentForm = ({ id }: NewCommentFormProps) => {
     if (session.status !== "authenticated") return null;
 
     return (
-        <form onSubmit={handleSubmit} className="border-b pb-4 ">
+        <form onSubmit={handleSubmit} className=" pb-4 ">
             {showReplying && (
-                <div className="pl-[4.5rem]">
+                <div className="pl-[3.2rem]">
                     <span className="text-gray-500">
                         Replying to&nbsp;
                     </span>
                     <span className="text-blue-400">
-                        @{tweet?.user?.name}
+                        @{postUser}
                     </span>
                 </div>
             )}
-            <div className="flex gap-4 p-4 ">
+            <div className="flex gap-3 py-4 ">
                 <ProfileImage src={session.data.user.image} />
                 <textarea
                     ref={inputRef}
@@ -151,7 +160,7 @@ const NewCommentForm = ({ id }: NewCommentFormProps) => {
             </div>
             <div className="flex justify-end px-4">
                 <Button disabled={!inputValue} className="self-end">
-                    Reply
+                    {createTweet.isLoading ? "Replying..." : "Reply"}
                 </Button>
             </div>
         </form>

@@ -1,9 +1,9 @@
-import { Prisma } from "@prisma/client";
-import { inferAsyncReturnType } from "@trpc/server";
+import type { Prisma } from "@prisma/client";
+import { type inferAsyncReturnType } from "@trpc/server";
 import { z } from "zod";
 
 import {
-    createTRPCContext,
+    type createTRPCContext,
     createTRPCRouter,
     protectedProcedure,
     publicProcedure,
@@ -13,7 +13,7 @@ export const tweetRouter = createTRPCRouter({
     getComments: publicProcedure.input(z.object({
         tweetId: z.string(),
     })).query(async ({ input, ctx }) => {
-        const comments = await ctx.prisma.comment.findMany({
+        return await ctx.prisma.comment.findMany({
             orderBy: {
                 createdAt: "desc",
             },
@@ -33,7 +33,6 @@ export const tweetRouter = createTRPCRouter({
                 },
             },
         });
-        return comments;
     }),
     addComment: protectedProcedure.input(z.object({
         tweetId: z.string(),
@@ -186,7 +185,7 @@ async function getInfiteTweet(
             id: true,
             content: true,
             createdAt: true,
-            _count: { select: { likes: true } },
+            _count: { select: { likes: true, comments: true } },
             likes: currentUserId == null ? false : {
                 where: {
                     userId: currentUserId,
@@ -218,6 +217,7 @@ async function getInfiteTweet(
             content: tweet.content,
             createdAt: tweet.createdAt,
             likeCount: tweet._count.likes,
+            commentCount: tweet._count.comments,
             isLiked: tweet.likes?.length > 0,
             user: tweet.user,
         })),

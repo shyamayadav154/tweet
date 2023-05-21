@@ -1,7 +1,6 @@
-import { HeartIcon } from "@heroicons/react/24/outline";
-import Lottie, { LottieRefCurrentProps } from "lottie-react";
-import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import { useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ProfileImage from "~/components/ProfileImage";
 import heartAnimation from "../assets/heart-fav.json";
@@ -9,6 +8,8 @@ import { api, type RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
+import Modal from "./Modal";
+import { NewCommentForm } from "./CommentSection";
 dayjs.extend(relativeTime);
 
 type Tweet = RouterOutputs["tweet"]["infinteFeed"]["tweets"][0];
@@ -50,8 +51,10 @@ const TweetCard = ({
     id,
     createdAt,
     likeCount,
+    commentCount,
     isLiked: likedByMe,
 }: Tweet) => {
+    const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
     const trpcUtils = api.useContext();
     const router = useRouter();
     const toggleLike = api.tweet.toggleLike.useMutation({
@@ -70,14 +73,14 @@ const TweetCard = ({
             <article
                 onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/post/${id}`);
+                    void router.push(`/post/${id}`);
                 }}
-                className="flex cursor-pointer hover:bg-gray-50 gap-4 border-b px-4 py-4"
+                className="flex cursor-pointer hover:bg-gray-50 gap-4 items-start border-b px-4 py-4"
             >
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/profile/${user.id}`);
+                        void router.push(`/profile/${user.id}`);
                     }}
                 >
                     <ProfileImage src={user.image} />
@@ -85,26 +88,68 @@ const TweetCard = ({
                 <div className="flex flex-grow flex-col">
                     <div className="flex gap-1">
                         <span
-                            className="hover:underline"
+                            className="hover:underline font-bold"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                router.push(`/profile/${user.id}`);
+                                void router.push(`/profile/${user.id}`);
                             }}
                         >
                             {user.name}
                         </span>
-                        <span className="text-gray-500">&#x2022;</span>
+                        <span className="text-gray-500">&middot;</span>
                         <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
                     </div>
-                    <p>{content}</p>
-                    <HeartButtonAnimated
-                        likedByMe={likedByMe}
-                        likeCount={likeCount}
-                        isLoading={toggleLike.isLoading}
-                        onClick={handleToggleLike}
-                    />
+                    <pre className="">{content}</pre>
+                    <div className=" text-gray-600 flex items-center gap-5">
+                        <HeartButtonAnimated
+                            likedByMe={likedByMe}
+                            likeCount={likeCount}
+                            isLoading={toggleLike.isLoading}
+                            onClick={handleToggleLike}
+                        />
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsCommentModalOpen(true);
+                            }}
+                            className="flex group items-center"
+                        >
+                            <span className="group-hover:bg-blue-100 p-1.5 rounded-full group-hover:text-blue-500 text-gray-500/60 ">
+                                <ChatBubbleOvalLeftIcon className="w-5 h-5 " />
+                            </span>
+                            &nbsp;
+                            <span className="group-hover:text-blue-400">{commentCount}</span>
+                        </button>
+                    </div>
                 </div>
             </article>
+            <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
+                <section className="bg-white w-[500px] p-5 rounded-xl">
+                    <article className="flex items-start gap-2.5">
+                        <ProfileImage src={user.image} />
+                        <div className="flex flex-grow flex-col">
+                            <div className="flex gap-1">
+                                <span className="font-bold">
+                                    {user.name}
+                                </span>
+                                <span className="text-gray-500">&middot;</span>
+                                <span className="text-gray-500">
+                                    {dayjs(createdAt).fromNow()}
+                                </span>
+                            </div>
+                            <pre className="">{content}</pre>
+                        </div>
+                    </article>
+                    {user.name &&
+                        (
+                            <NewCommentForm
+                                closeModal={() => setIsCommentModalOpen(false)}
+                                id={id}
+                                postUser={user.name}
+                            />
+                        )}
+                </section>
+            </Modal>
         </li>
     );
 };
@@ -124,11 +169,6 @@ const HeartButtonAnimated = ({
 }: HeartButtonProps) => {
     const heartRef = useRef<LottieRefCurrentProps>(null);
 
-    useEffect(() => {
-        if (likedByMe) {
-            heartRef.current?.goToAndStop(138, true);
-        }
-    }, []);
     return (
         <div>
             <button
@@ -147,6 +187,11 @@ const HeartButtonAnimated = ({
                 <div className="grid h-8 w-8 transition-colors duration-200 cursor-pointer place-content-center overflow-hidden rounded-full group-hover:bg-pink-100">
                     <Lottie
                         lottieRef={heartRef}
+                        onDOMLoaded={() => {
+                            if (likedByMe) {
+                                heartRef.current?.goToAndStop(138, true);
+                            }
+                        }}
                         animationData={heartAnimation}
                         loop={false}
                         autoplay={false}
@@ -158,26 +203,6 @@ const HeartButtonAnimated = ({
                 </span>
             </button>
         </div>
-    );
-};
-
-const HeartButton = ({
-    likedByMe,
-    likeCount,
-    isLoading,
-    onClick,
-}: HeartButtonProps) => {
-    return (
-        <button
-            disabled={isLoading}
-            onClick={onClick}
-            className="mb-1 mt-1 flex items-center gap-3 self-start text-gray-500"
-        >
-            <HeartIcon
-                className={`h-5 w-5 ${likedByMe ? "fill-red-500 stroke-red-500" : ""}`}
-            />
-            <span>{likeCount}</span>
-        </button>
     );
 };
 
