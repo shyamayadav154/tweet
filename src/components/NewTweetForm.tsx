@@ -52,9 +52,8 @@ const Form = () => {
     }, [inputValue]);
 
     if (session.status !== "authenticated") return null;
-
     return (
-        <form action="" onSubmit={handleSubmit} className="border-b pb-4">
+        <form action="" onSubmit={handleSubmit} className="border-b-2 dark:border-zinc-800 pb-4">
             <div className="flex gap-4 p-4 ">
                 <ProfileImage src={session.data.user.image} />
                 <textarea
@@ -62,8 +61,8 @@ const Form = () => {
                     style={{ height: 0 }}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="what's happeing?"
-                    className="flex-grow focus:border-b resize-none overflow-hidden pb-4  text-lg outline-none"
+                    placeholder="What is happeing?"
+                    className="flex-grow dark:text-zinc-100 focus:border-b resize-none overflow-hidden bg-inherit pt-1 pb-4 dark:border-zinc-700  text-lg outline-none"
                 />
             </div>
             <div className="flex justify-end px-4">

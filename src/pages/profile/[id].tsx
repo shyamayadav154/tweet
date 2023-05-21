@@ -51,16 +51,16 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 <title>{`Twitter Clone - ${profile?.name}`}</title>
             </Head>
 
-            <header className="sticky top-0 z-10 flex items-center gap-2 border-b bg-white p-2">
-                <Link className="p-2 hover:bg-gray-50 rounded-full" href="..">
-                    <VscArrowLeft className="h-6 w-6 text-gray-600" />
+            <header className="sticky top-0 z-10 flex items-center gap-2 dark dark:border-zinc-800 border-b dark:bg-black/80 bg-white/80 backdrop-blur-xl p-2">
+                <Link className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full" href="..">
+                    <VscArrowLeft className="h-6 w-6 dark:text-zinc-400 text-gray-600" />
                 </Link>
                 {profile.image && <ProfileImage src={profile.image} />}
                 <div className="flex-1">
                     <div className="flex flex-1 items-center gap-2">
-                        <h1 className="font-medium">{profile.name}</h1>
+                        <h1 className="font-medium text-zinc-100">{profile.name}</h1>
                     </div>
-                    <div className="text-sm capitalize text-gray-500">
+                    <div className="text-sm capitalize dark:text-zinc-400 text-gray-500">
                         {profile.tweetsCount}&nbsp;
                         {getPulral(profile.tweetsCount, "tweet", "tweets")} &#x2022;&nbsp;
                         {profile.followersCount}&nbsp;

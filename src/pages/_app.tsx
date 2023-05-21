@@ -1,33 +1,37 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import Head from "next/head";
 import { type ReactNode } from "react";
 import SideNav from "~/components/SideNav";
+import { SessionProvider } from "next-auth/react";
+import localFont from "next/font/local";
 
 const MyApp: AppType<{ session: Session | null }> = ({
     Component,
     pageProps: { session, ...pageProps },
 }) => {
     return (
-        <SessionProvider session={session}>
+        <>
             <Head>
                 <title>Twitter Clone</title>
                 <meta name="description" content="This is a twitter clond" />
             </Head>
-            <Container>
-                <SideNav />
-                <div className="flex-grow min-h-screen border-x">
-                    <Component {...pageProps} />
-                </div>
-            </Container>
-        </SessionProvider>
+            <main className="dark:bg-black dark:text-zinc-100">
+                <Container session={session}>
+                    <SideNav />
+                    <div className="flex-grow min-h-screen dark:border-zinc-800 border-x">
+                        <SessionProvider session={session}>
+                            <Component {...pageProps} />
+                        </SessionProvider>
+                    </div>
+                </Container>
+            </main>
+        </>
     );
 };
 
-import localFont from "next/font/local";
 const twitter = localFont({
     src: [
         {
@@ -49,12 +53,16 @@ const twitter = localFont({
     ],
 });
 
-const Container = ({ children }: { children: ReactNode }) => {
+const Container = (
+    { children, session }: { children: ReactNode; session: Session | null },
+) => {
     return (
         <div
-            className={`mx-auto ${twitter.className} sm:pr-4 flex w-full  container md:max-w-3xl items-start`}
+            className={`mx-auto  ${twitter.className} sm:pr-4 flex w-full  container md:max-w-3xl items-start`}
         >
-            {children}
+            <SessionProvider session={session}>
+                {children}
+            </SessionProvider>
         </div>
     );
 };

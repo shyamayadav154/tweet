@@ -11,10 +11,10 @@ function SideNav() {
             <ul className="flex flex-col items-start ">
                 <li className="">
                     <Link
-                        className="flex gap-2 items-center hover:bg-gray-50 transition-colors duration-200 p-2 rounded-full"
+                        className="flex gap-3 items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200  p-3 rounded-full"
                         href="/"
                     >
-                        <VscHome className="w-7 h-7 text-gray-600" />
+                        <VscHome className="w-7 h-7 text-gray-600 dark:text-gray-200" />
                         <span className="hidden text-lg md:inline">
                             Home
                         </span>
@@ -24,10 +24,10 @@ function SideNav() {
                     (
                         <li className="">
                             <Link
-                                className="flex gap-2 items-center hover:bg-gray-50 transition-colors duration-200 p-2 rounded-full"
+                                className="flex gap-2 dark:hover:bg-zinc-800 items-center hover:bg-gray-50 transition-colors duration-200 p-3 rounded-full"
                                 href={`/profile/${user.id}`}
                             >
-                                <VscAccount className="w-7 h-7 text-gray-600" />
+                                <VscAccount className="w-7 h-7 text-gray-600 dark:text-gray-200" />
                                 <span className="hidden text-lg md:inline">
                                     Profile
                                 </span>
@@ -38,10 +38,10 @@ function SideNav() {
                     ? (
                         <li>
                             <button
-                                className="flex gap-2 items-center hover:bg-gray-50 transition-colors duration-200 p-2 rounded-full"
+                                className="flex gap-2 items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200 p-3 rounded-full"
                                 onClick={() => void signOut()}
                             >
-                                <VscSignOut className="w-7 h-7 text-gray-600" />
+                                <VscSignOut className="w-7 h-7 text-gray-600 dark:text-gray-200" />
                                 <span className="hidden md:inline text-lg">
                                     Log out
                                 </span>
@@ -51,11 +51,13 @@ function SideNav() {
                     : (
                         <li>
                             <button
-                                className="flex gap-2 items-center hover:bg-gray-50 transition-colors duration-200 p-2 rounded-full"
+                                className="flex gap-2 items-center dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200 p-3 rounded-full"
                                 onClick={() => void signIn()}
                             >
-                                <VscSignIn className="w-7 h-7 text-gray-600" />
-                                Log in
+                                <VscSignIn className="w-7 h-7 dark:text-gray-200 text-gray-600" />
+                                <span className="hidden md:inline text-lg">
+                                    Log in 
+                                </span>
                             </button>
                         </li>
                     )}

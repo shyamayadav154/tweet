@@ -75,7 +75,7 @@ const TweetCard = ({
                     e.stopPropagation();
                     void router.push(`/post/${id}`);
                 }}
-                className="flex cursor-pointer hover:bg-gray-50 gap-4 items-start border-b px-4 py-4"
+                className="flex cursor-pointer dark:hover:bg-zinc-950 hover:bg-gray-50 gap-4 items-start dark:border-zinc-800 border-b px-4 py-4"
             >
                 <button
                     onClick={(e) => {
@@ -124,20 +124,20 @@ const TweetCard = ({
                 </div>
             </article>
             <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
-                <section className="bg-white w-[500px] p-5 rounded-xl">
+                <section className="bg-white w-[500px] p-5 rounded-xl dark:bg-black">
                     <article className="flex items-start gap-2.5">
                         <ProfileImage src={user.image} />
                         <div className="flex flex-grow flex-col">
                             <div className="flex gap-1">
-                                <span className="font-bold">
+                                <span className="font-bold dark:text-zinc-100">
                                     {user.name}
                                 </span>
-                                <span className="text-gray-500">&middot;</span>
-                                <span className="text-gray-500">
+                                <span className="text-gray-500 dark:text-zinc-400">&middot;</span>
+                                <span className="text-gray-500 dark:text-zinc-400">
                                     {dayjs(createdAt).fromNow()}
                                 </span>
                             </div>
-                            <pre className="">{content}</pre>
+                            <pre className="dark:text-zinc-100">{content}</pre>
                         </div>
                     </article>
                     {user.name &&

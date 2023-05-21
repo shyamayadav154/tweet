@@ -23,7 +23,7 @@ function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
 function CommentSection({ id, postUser }: { id: string; postUser: string }) {
     return (
         <div>
-            <div className="px-5 border-b">
+            <div className="px-5 dark:border-zinc-800 border-b">
                 <NewCommentForm postUser={postUser} id={id} />
             </div>
             <CommentList id={id} />
@@ -56,7 +56,7 @@ const CommentList = ({ id }: CommentListProps) => {
 
 const CommentCard = ({ createdAt, user, content }: Comment) => {
     return (
-        <li className="border-b px-5">
+        <li className="border-b dark:border-zinc-800 px-5">
             <article
                 onClick={(e) => {
                     e.stopPropagation();
@@ -155,7 +155,7 @@ export const NewCommentForm = (
                     onFocus={() => setShowReplying(true)}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Tweet your reply!"
-                    className="flex-grow resize-none overflow-hidden pb-4 pt-1  text-lg outline-none"
+                    className="flex-grow bg-inherit dark:text-zinc-100 resize-none overflow-hidden pb-4 pt-1  text-lg outline-none"
                 />
             </div>
             <div className="flex justify-end px-4">
