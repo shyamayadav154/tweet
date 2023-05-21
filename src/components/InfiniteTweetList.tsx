@@ -69,13 +69,13 @@ const TweetCard = ({
         });
     }
     return (
-        <li>
+        <li className="">
             <article
                 onClick={(e) => {
                     e.stopPropagation();
                     void router.push(`/post/${id}`);
                 }}
-                className="flex cursor-pointer dark:hover:bg-zinc-950 hover:bg-gray-50 gap-4 items-start dark:border-zinc-800 border-b px-4 py-4"
+                className="flex cursor-pointer dark:hover:bg-zinc-950 hover:bg-gray-50 gap-4 items-start dark:border-zinc-800 border-b p-4 "
             >
                 <button
                     onClick={(e) => {

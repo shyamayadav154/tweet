@@ -7,8 +7,8 @@ function SideNav() {
     const session = useSession();
     const user = session.data?.user;
     return (
-        <nav className="sticky top-0 px-2 py-4 ">
-            <ul className="flex flex-col items-start ">
+        <nav className="sm:sticky  sm:top-0 fixed inset-x-0 bottom-0 z-10 bg-black px-2 py-4 ">
+            <ul className="flex  justify-between sm:justify-start sm:flex-col items-start ">
                 <li className="">
                     <Link
                         className="flex gap-3 items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200  p-3 rounded-full"
@@ -38,7 +38,7 @@ function SideNav() {
                     ? (
                         <li>
                             <button
-                                className="flex gap-2 items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200 p-3 rounded-full"
+                                className="flex gap-2 whitespace-nowrap items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200 p-3 rounded-full"
                                 onClick={() => void signOut()}
                             >
                                 <VscSignOut className="w-7 h-7 text-gray-600 dark:text-gray-200" />

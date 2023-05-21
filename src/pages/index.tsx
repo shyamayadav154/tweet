@@ -37,13 +37,13 @@ const Home: NextPage = () => {
                         )}
                 </Tabs.List>
             </header>
-            <NewTweetForm />
-            <Tabs.Content value="recent">
-                <RecentPosts />
-            </Tabs.Content>
-            <Tabs.Content value="following">
-                <FollowingPosts />
-            </Tabs.Content>
+                <NewTweetForm />
+                <Tabs.Content value="recent">
+                    <RecentPosts />
+                </Tabs.Content>
+                <Tabs.Content value="following">
+                    <FollowingPosts />
+                </Tabs.Content>
         </Tabs.Root>
     );
 };

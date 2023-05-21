@@ -18,16 +18,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
                 <title>Twitter Clone</title>
                 <meta name="description" content="This is a twitter clond" />
             </Head>
-            <main className="dark:bg-black dark:text-zinc-100">
+            <SessionProvider session={session}>
                 <Container session={session}>
                     <SideNav />
-                    <div className="flex-grow min-h-screen dark:border-zinc-800 border-x">
-                        <SessionProvider session={session}>
-                            <Component {...pageProps} />
-                        </SessionProvider>
-                    </div>
+                    <main className=" min-h-screen   w-full  dark:border-zinc-800 border-x">
+                        <Component {...pageProps} />
+                    </main>
                 </Container>
-            </main>
+            </SessionProvider>
         </>
     );
 };
@@ -58,11 +56,9 @@ const Container = (
 ) => {
     return (
         <div
-            className={`mx-auto  ${twitter.className} sm:pr-4 flex w-full  container md:max-w-3xl items-start`}
+            className={`mx-auto  ${twitter.className}   dark:text-zinc-100 flex w-full   md:max-w-3xl items-start`}
         >
-            <SessionProvider session={session}>
-                {children}
-            </SessionProvider>
+            {children}
         </div>
     );
 };
