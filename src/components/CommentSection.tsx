@@ -137,8 +137,8 @@ export const NewCommentForm = (
     return (
         <form onSubmit={handleSubmit} className=" pb-4 ">
             {showReplying && (
-                <div className="pl-[3.2rem]">
-                    <span className="text-gray-500">
+                <div className="pl-[3.2rem] pt-5">
+                    <span className="text-gray-500 dark:text-zinc-500">
                         Replying to&nbsp;
                     </span>
                     <span className="text-blue-400">
@@ -158,7 +158,7 @@ export const NewCommentForm = (
                     className="flex-grow bg-inherit dark:text-zinc-100 resize-none overflow-hidden pb-4 pt-1  text-lg outline-none"
                 />
             </div>
-            <div className="flex justify-end px-4">
+            <div className="flex justify-end ">
                 <Button disabled={!inputValue} className="self-end">
                     {createTweet.isLoading ? "Replying..." : "Reply"}
                 </Button>

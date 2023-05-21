@@ -1,4 +1,4 @@
-import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleOvalLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -124,7 +124,13 @@ const TweetCard = ({
                 </div>
             </article>
             <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
-                <section className="bg-white w-[500px] p-5 rounded-xl dark:bg-black">
+                <section className="bg-white w-full sm:w-[600px] px-5 pt-4 rounded-2xl dark:bg-black">
+                    <header className="pb-5">
+                        <XMarkIcon
+                            onClick={() => setIsCommentModalOpen(false)}
+                            className="w-6 h-6 cursor-pointer text-gray-500 dark:text-zinc-100"
+                        />
+                    </header>
                     <article className="flex items-start gap-2.5">
                         <ProfileImage src={user.image} />
                         <div className="flex flex-grow flex-col">
@@ -132,7 +138,9 @@ const TweetCard = ({
                                 <span className="font-bold dark:text-zinc-100">
                                     {user.name}
                                 </span>
-                                <span className="text-gray-500 dark:text-zinc-400">&middot;</span>
+                                <span className="text-gray-500 dark:text-zinc-400">
+                                    &middot;
+                                </span>
                                 <span className="text-gray-500 dark:text-zinc-400">
                                     {dayjs(createdAt).fromNow()}
                                 </span>
