@@ -100,7 +100,7 @@ const TweetCard = ({
                         <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
                     </div>
                     <pre className="">{content}</pre>
-                    <div className=" text-gray-600 flex items-center gap-5">
+                    <div className="text-gray-600 dark:text-zinc-500  flex items-center gap-5">
                         <HeartButtonAnimated
                             likedByMe={likedByMe}
                             likeCount={likeCount}
@@ -114,7 +114,7 @@ const TweetCard = ({
                             }}
                             className="flex group items-center"
                         >
-                            <span className="group-hover:bg-blue-100 p-1.5 rounded-full group-hover:text-blue-500 text-gray-500/60 ">
+                            <span className="group-hover:bg-blue-100 dark:group-hover:bg-blue-300/20 p-1.5 rounded-full group-hover:text-blue-500 text-gray-500/60 ">
                                 <ChatBubbleOvalLeftIcon className="w-5 h-5 " />
                             </span>
                             &nbsp;
@@ -178,7 +178,6 @@ const HeartButtonAnimated = ({
     const heartRef = useRef<LottieRefCurrentProps>(null);
 
     return (
-        <div>
             <button
                 disabled={isLoading}
                 onClick={(e) => {
@@ -190,9 +189,9 @@ const HeartButtonAnimated = ({
                     }
                     heartRef.current?.goToAndPlay(35, true);
                 }}
-                className="flex  justify-start items-center group text-gray-500 gap-0.5"
+                className="flex  justify-start items-center group  gap-0.5"
             >
-                <div className="grid h-8 w-8 transition-colors duration-200 cursor-pointer place-content-center overflow-hidden rounded-full group-hover:bg-pink-100">
+                <div className="grid h-8 w-8 transition-colors duration-200 cursor-pointer place-content-center overflow-hidden rounded-full group-hover:bg-pink-100 dark:group-hover:bg-pink-900/40">
                     <Lottie
                         lottieRef={heartRef}
                         onDOMLoaded={() => {
@@ -203,14 +202,13 @@ const HeartButtonAnimated = ({
                         animationData={heartAnimation}
                         loop={false}
                         autoplay={false}
-                        className="scale-[3]"
+                        className="scale-[3] "
                     />
                 </div>
-                <span className="group-hover:text-pink-500 transition-colors duration-200">
+                <span className="group-hover:text-pink-500  transition-colors duration-200">
                     {likeCount}
                 </span>
             </button>
-        </div>
     );
 };
 
