@@ -23,5 +23,5 @@ pre {
 body {
 background: rgb(var(--background-start-rgb));
   color: rgb(var(--foreground-rgb));
-    overflow: scroll;
+ overflow-y: scroll;
 }

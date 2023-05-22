@@ -10,6 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
 import Modal from "./Modal";
 import { NewCommentForm } from "./CommentSection";
+import { signIn, useSession } from "next-auth/react";
 dayjs.extend(relativeTime);
 
 type Tweet = RouterOutputs["tweet"]["infinteFeed"]["tweets"][0];
@@ -55,6 +56,7 @@ const TweetCard = ({
     isLiked: likedByMe,
 }: Tweet) => {
     const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+    const session = useSession();
     const trpcUtils = api.useContext();
     const router = useRouter();
     const toggleLike = api.tweet.toggleLike.useMutation({
@@ -64,6 +66,9 @@ const TweetCard = ({
         },
     });
     function handleToggleLike() {
+        if (session.status !== "authenticated") {
+            return signIn();
+        }
         toggleLike.mutate({
             id,
         });
@@ -109,6 +114,9 @@ const TweetCard = ({
                         />
                         <button
                             onClick={(e) => {
+                                if (session.status !== "authenticated") {
+                                    return signIn();
+                                }
                                 e.stopPropagation();
                                 setIsCommentModalOpen(true);
                             }}
@@ -124,7 +132,7 @@ const TweetCard = ({
                 </div>
             </article>
             <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
-                <section className="bg-white w-full sm:w-[600px] px-5 pt-4 rounded-2xl dark:bg-black">
+                <section className="bg-white  w-full sm:w-[600px] px-4 pt-4 rounded-2xl dark:bg-black">
                     <header className="pb-5">
                         <XMarkIcon
                             onClick={() => setIsCommentModalOpen(false)}
@@ -178,37 +186,37 @@ const HeartButtonAnimated = ({
     const heartRef = useRef<LottieRefCurrentProps>(null);
 
     return (
-            <button
-                disabled={isLoading}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onClick();
-                    if (likedByMe) {
-                        heartRef.current?.goToAndStop(1, true);
-                        return;
-                    }
-                    heartRef.current?.goToAndPlay(35, true);
-                }}
-                className="flex  justify-start items-center group  gap-0.5"
-            >
-                <div className="grid h-8 w-8 transition-colors duration-200 cursor-pointer place-content-center overflow-hidden rounded-full group-hover:bg-pink-100 dark:group-hover:bg-pink-900/40">
-                    <Lottie
-                        lottieRef={heartRef}
-                        onDOMLoaded={() => {
-                            if (likedByMe) {
-                                heartRef.current?.goToAndStop(138, true);
-                            }
-                        }}
-                        animationData={heartAnimation}
-                        loop={false}
-                        autoplay={false}
-                        className="scale-[3] "
-                    />
-                </div>
-                <span className="group-hover:text-pink-500  transition-colors duration-200">
-                    {likeCount}
-                </span>
-            </button>
+        <button
+            disabled={isLoading}
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+                if (likedByMe) {
+                    heartRef.current?.goToAndStop(1, true);
+                    return;
+                }
+                heartRef.current?.goToAndPlay(35, true);
+            }}
+            className="flex  justify-start items-center group  gap-0.5"
+        >
+            <div className="grid h-8 w-8 transition-colors duration-200 cursor-pointer place-content-center overflow-hidden rounded-full group-hover:bg-pink-100 dark:group-hover:bg-pink-900/40">
+                <Lottie
+                    lottieRef={heartRef}
+                    onDOMLoaded={() => {
+                        if (likedByMe) {
+                            heartRef.current?.goToAndStop(138, true);
+                        }
+                    }}
+                    animationData={heartAnimation}
+                    loop={false}
+                    autoplay={false}
+                    className="scale-[3] "
+                />
+            </div>
+            <span className="group-hover:text-pink-500  transition-colors duration-200">
+                {likeCount}
+            </span>
+        </button>
     );
 };
 
