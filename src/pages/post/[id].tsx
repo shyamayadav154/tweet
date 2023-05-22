@@ -54,7 +54,7 @@ const PostPage = ({ id }: PostPageProps) => {
                         </span>
                     </div>
                     <div className="border-t dark:border-zinc-800 py-2  space-x-1">
-                        <span className="text-black">
+                        <span className="">
                             {postInfo.data._count.likes}
                         </span>
                         <span className="text-gray-500">

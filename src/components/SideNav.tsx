@@ -7,7 +7,7 @@ function SideNav() {
     const session = useSession();
     const user = session.data?.user;
     return (
-        <nav className="sm:sticky  sm:top-0 fixed inset-x-0 bottom-0 z-10 bg-black px-2 py-4 ">
+        <nav className="sm:sticky -ml-1 sm:top-0 fixed inset-x-0 bottom-0 z-10 bg-black sm:bg-inherit  px-1 py-4 ">
             <ul className="flex  justify-between sm:justify-start sm:flex-col items-start ">
                 <li className="">
                     <Link
