@@ -133,10 +133,10 @@ const TweetCard = ({
             </article>
             <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
                 <section className="bg-white  w-full sm:w-[600px] px-4 pt-4 rounded-2xl dark:bg-black">
-                    <header className="pb-5">
+                    <header className="mb-5 ">
                         <XMarkIcon
                             onClick={() => setIsCommentModalOpen(false)}
-                            className="w-6 h-6 cursor-pointer text-gray-500 dark:text-zinc-100"
+                            className="w-9 hover:bg-zinc-800 rounded-full -ml-2 -mt-2 p-2 duration-200 transition-colors  h-9 cursor-pointer text-gray-500 dark:text-zinc-100"
                         />
                     </header>
                     <article className="flex items-start gap-2.5">

@@ -8,11 +8,12 @@ import { useSession } from "next-auth/react";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import Link from "next/link";
+import { useState } from "react";
 import { VscArrowLeft } from "react-icons/vsc";
-import Button from "~/components/Button";
 import InfiniteTweetList from "~/components/InfiniteTweetList";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import ProfileImage from "~/components/ProfileImage";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/Tabs";
 import { ssgHelper } from "~/server/api/ssgHelper";
 import { api } from "~/utils/api";
 import { getPulral } from "~/utils/profile";
@@ -23,14 +24,6 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     const { data: profile, status } = api.profile.getById.useQuery({
         id,
     });
-    const tweets = api.tweet.infiniteProfileFeed.useInfiniteQuery(
-        {
-            userId: id,
-        },
-        {
-            getNextPageParam: (lastPage) => lastPage.nextCursor,
-        },
-    );
 
     const trpcUtils = api.useContext();
     const toggleFollow = api.profile.toggleFollow.useMutation({
@@ -52,13 +45,16 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </Head>
 
             <header className="sticky top-0 z-10 flex items-center gap-2 dark dark:border-zinc-800 border-b dark:bg-black/80 bg-white/80 backdrop-blur-xl p-2">
-                <Link className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full" href="..">
+                <Link
+                    className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full"
+                    href=".."
+                >
                     <VscArrowLeft className="h-6 w-6 dark:text-zinc-400 text-gray-600" />
                 </Link>
                 {profile.image && <ProfileImage src={profile.image} />}
                 <div className="flex-1">
                     <div className="flex flex-1 items-center gap-2">
-                        <h1 className="font-medium text-zinc-100">{profile.name}</h1>
+                        <h1 className="font-bold dark:text-zinc-100 ">{profile.name}</h1>
                     </div>
                     <div className="text-sm capitalize dark:text-zinc-400 text-gray-500">
                         {profile.tweetsCount}&nbsp;
@@ -81,15 +77,86 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 />
             </header>
             <main>
-                <InfiniteTweetList
-                    tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
-                    isError={tweets.isError}
-                    isLoading={tweets.isLoading}
-                    hasMore={!!tweets.hasNextPage}
-                    fetchNewTweets={tweets.fetchNextPage}
-                />
+                <header className="">
+                    <Tabs defaultValue="tweet" className="pb-20 ">
+                        <TabsList className="grid grid-cols-3">
+                            <TabsTrigger value="tweet">Tweets</TabsTrigger>
+                            <TabsTrigger value="replies">Replies</TabsTrigger>
+                            <TabsTrigger value="likes">Likes</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="tweet">
+                            <UserPosts id={id} />
+                        </TabsContent>
+                        <TabsContent value="replies">
+                            <RepliedPosts id={id} />
+                        </TabsContent>
+                        <TabsContent value="likes">
+                            <LikedPosts id={id} />
+                        </TabsContent>
+                    </Tabs>
+                </header>
             </main>
         </>
+    );
+};
+
+const LikedPosts = ({id}:{id:string}) => {
+    const tweets = api.tweet.infineteLikedFeed.useInfiniteQuery(
+        {
+            userId: id,
+        },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+        },
+    );
+    return (
+        <InfiniteTweetList
+            tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
+            isError={tweets.isError}
+            isLoading={tweets.isLoading}
+            hasMore={!!tweets.hasNextPage}
+            fetchNewTweets={tweets.fetchNextPage}
+        />
+    );
+};
+
+const RepliedPosts = ({id}:{id:string}) => {
+    const tweets = api.tweet.infineteReplyFeed.useInfiniteQuery(
+        {
+            userId: id,
+        },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+        },
+    );
+    return (
+        <InfiniteTweetList
+            tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
+            isError={tweets.isError}
+            isLoading={tweets.isLoading}
+            hasMore={!!tweets.hasNextPage}
+            fetchNewTweets={tweets.fetchNextPage}
+        />
+    );
+};
+
+const UserPosts = ({id}:{id:string}) => {
+    const tweets = api.tweet.infiniteProfileFeed.useInfiniteQuery(
+        {
+            userId: id,
+        },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+        },
+    );
+    return (
+        <InfiniteTweetList
+            tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
+            isError={tweets.isError}
+            isLoading={tweets.isLoading}
+            hasMore={!!tweets.hasNextPage}
+            fetchNewTweets={tweets.fetchNextPage}
+        />
     );
 };
 
@@ -106,15 +173,27 @@ const FollowButton = ({
     onClick,
 }: FollowButtonProps) => {
     const session = useSession();
+    const [unFollowText, setUnFollowText] = useState<"Unfollow" | "Following">(
+        "Following",
+    );
 
     if (session.status !== "authenticated" || session.data.user.id === userId) {
         return null;
     }
 
     return (
-        <Button onClick={onClick} disabled={isLoading} small gray={isFollowing}>
-            {isFollowing ? "Unfollow" : "Follow"}
-        </Button>
+        <button
+            onClick={onClick}
+            onMouseEnter={() => setUnFollowText("Unfollow")}
+            onMouseLeave={() => setUnFollowText("Following")}
+            disabled={isLoading}
+            className={`px-3 ${isFollowing
+                    ? "text-black bg-white hover:bg-red-100 hover:border-red-300 hover:text-red-500 w-[106px]"
+                    : "bg-black text-white hover:bg-opacity-90"
+                } font-bold py-1.5 border rounded-full`}
+        >
+            {isFollowing ? unFollowText : "Follow"}
+        </button>
     );
 };
 export default ProfilePage;

@@ -50,6 +50,8 @@ const Home: NextPage = () => {
     );
 };
 
+
+
 const FollowingPosts = () => {
     const tweets = api.tweet.infinteFeed.useInfiniteQuery(
         {
@@ -59,6 +61,8 @@ const FollowingPosts = () => {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
         },
     );
+    if(tweets.isLoading) return <LoadingSpinner />;
+    if(tweets.isError) return <p>Error...</p>;
     return (
         <InfiniteTweetList
             tweets={tweets.data?.pages.flatMap((page) => page.tweets)}

@@ -99,6 +99,49 @@ export const tweetRouter = createTRPCRouter({
         });
         return post;
     }),
+    infineteLikedFeed: publicProcedure.input(z.object({
+        userId: z.string(),
+        limit: z.number().optional(),
+        cursor: z.object({
+            id: z.string(),
+            createdAt: z.date(),
+        }).optional(),
+    })).query(async ({ input: { userId, limit = 10, cursor }, ctx }) => {
+        return await getInfiteTweet({
+            limit,
+            cursor,
+            ctx,
+            whereClause: {
+                likes: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
+        });
+    }),
+
+    infineteReplyFeed: publicProcedure.input(z.object({
+        userId: z.string(),
+        limit: z.number().optional(),
+        cursor: z.object({
+            id: z.string(),
+            createdAt: z.date(),
+        }).optional(),
+    })).query(async ({ input: { userId, limit = 10, cursor }, ctx }) => {
+        return await getInfiteTweet({
+            limit,
+            cursor,
+            ctx,
+            whereClause: {
+                comments: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
+        });
+    }),
     infiniteProfileFeed: publicProcedure.input(z.object({
         userId: z.string(),
         limit: z.number().optional(),
