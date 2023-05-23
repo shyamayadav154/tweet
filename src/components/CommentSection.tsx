@@ -6,12 +6,13 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { api,type RouterOutputs } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import ProfileImage from "./ProfileImage";
 import Button from "./Button";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import LoadingSpinner from "./LoadingSpinner";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
@@ -44,7 +45,7 @@ const CommentList = ({ id }: CommentListProps) => {
         tweetId: id,
     });
     if (isLoading) return <LoadingSpinner />;
-    if(!comments?.length) return <p>No comments found</p>;
+    if (!comments?.length) return <p>No comments found</p>;
     return (
         <ul className="">
             {comments?.map((comment: Comment) => (
@@ -61,25 +62,22 @@ const CommentCard = ({ createdAt, user, content }: Comment) => {
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
-                className="flex cursor-pointer  gap-4   py-4"
+                className="flex gap-4   py-4"
             >
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                    }}
+                <Link
+                    href={`/profile/${user.id}`}
+                    className="hover:underline font-medium"
                 >
                     <ProfileImage src={user.image} />
-                </button>
+                </Link>
                 <div className="flex flex-grow flex-col">
                     <div className="flex gap-1">
-                        <span
+                        <Link
+                            href={`/profile/${user.id}`}
                             className="hover:underline font-medium"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                            }}
                         >
                             {user.name}
-                        </span>
+                        </Link>
                         <span className="text-gray-500">&#x2022;</span>
                         <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
                     </div>

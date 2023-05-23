@@ -63,6 +63,8 @@ const TweetCard = ({
         onSuccess: () => {
             void trpcUtils.tweet.infinteFeed.invalidate();
             void trpcUtils.tweet.infiniteProfileFeed.invalidate();
+            void trpcUtils.tweet.infineteLikedFeed.invalidate();
+            void trpcUtils.tweet.infineteReplyFeed.invalidate();
         },
     });
     function handleToggleLike() {
