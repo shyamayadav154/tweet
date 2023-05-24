@@ -97,7 +97,7 @@ export const profileRouter = createTRPCRouter({
                 followersCount: profile._count.followers,
                 followsCount: profile._count.follows,
                 tweetsCount: profile._count.tweets,
-                isFollowing: profile.followers?.length > 0,
+                isFollowing: profile.followers.length > 0,
             };
         }),
 });

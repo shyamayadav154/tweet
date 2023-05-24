@@ -4,7 +4,7 @@ import type {
     InferGetStaticPropsType,
     NextPage,
 } from "next";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import Link from "next/link";
@@ -100,7 +100,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     );
 };
 
-const LikedPosts = ({ id }: { id: string }) => {
+const LikedPosts = ({id}:{id:string}) => {
     const tweets = api.tweet.infineteLikedFeed.useInfiniteQuery(
         {
             userId: id,
@@ -120,7 +120,7 @@ const LikedPosts = ({ id }: { id: string }) => {
     );
 };
 
-const RepliedPosts = ({ id }: { id: string }) => {
+const RepliedPosts = ({id}:{id:string}) => {
     const tweets = api.tweet.infineteReplyFeed.useInfiniteQuery(
         {
             userId: id,
@@ -140,7 +140,7 @@ const RepliedPosts = ({ id }: { id: string }) => {
     );
 };
 
-const UserPosts = ({ id }: { id: string }) => {
+const UserPosts = ({id}:{id:string}) => {
     const tweets = api.tweet.infiniteProfileFeed.useInfiniteQuery(
         {
             userId: id,
@@ -177,23 +177,18 @@ const FollowButton = ({
         "Following",
     );
 
-    if (session?.data?.user.id === userId) {
+    if (session.status !== "authenticated" || session.data.user.id === userId) {
         return null;
     }
 
     return (
         <button
-            onClick={() => {
-                if (session.status !== "authenticated") {
-                    return signIn();
-                }
-                onClick();
-            }}
+            onClick={onClick}
             onMouseEnter={() => setUnFollowText("Unfollow")}
             onMouseLeave={() => setUnFollowText("Following")}
             disabled={isLoading}
             className={`px-3 ${isFollowing
-                    ? "text-black bg-white hover:bg-red-100 dark:hover:bg-black dark:hover:border-red-400 hover:border-red-300 hover:text-red-500 w-[106px]"
+                    ? "text-black bg-white hover:bg-red-100 hover:border-red-300 hover:text-red-500 w-[106px]"
                     : "bg-black text-white hover:bg-opacity-90"
                 } font-bold py-1.5 border rounded-full`}
         >
