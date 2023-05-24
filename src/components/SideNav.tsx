@@ -56,8 +56,9 @@ const SingleLink = (
     return (
         <li className="">
             <Link
-                className={`flex ${isCurrentPath(href) &&
-                    "bg-gray-100 font-medium dark:bg-zinc-900 sm:bg-inherit"
+                className={`flex ${isCurrentPath(href)
+                        ? "bg-gray-100 font-medium dark:bg-zinc-900 sm:bg-inherit"
+                        : ""
                     } gap-3 items-center  dark:hover:bg-zinc-800 hover:bg-gray-50 transition-colors duration-200  p-3 rounded-full`}
                 href={href}
             >

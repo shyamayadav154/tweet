@@ -1,4 +1,6 @@
-import { ChatBubbleOvalLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import { BsFillChatFill } from "react-icons/bs";
+import { BsFillHeartFill } from "react-icons/bs";
 import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -8,9 +10,9 @@ import { api, type RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
-import Modal from "./Modal";
-import { NewCommentForm } from "./CommentSection";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import CommentModal from "./CommentModal";
+import NoAuthModal from "./NoAuth";
 dayjs.extend(relativeTime);
 
 type Tweet = RouterOutputs["tweet"]["infinteFeed"]["tweets"][0];
@@ -56,6 +58,12 @@ const TweetCard = ({
     isLiked: likedByMe,
 }: Tweet) => {
     const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState({
+        isVisible: false,
+        title: "",
+        subTitle: "",
+        icon: BsFillChatFill,
+    });
     const session = useSession();
     const trpcUtils = api.useContext();
     const router = useRouter();
@@ -69,11 +77,19 @@ const TweetCard = ({
     });
     function handleToggleLike() {
         if (session.status !== "authenticated") {
-            return signIn();
+            if (!user.name) return false 
+            setShowAuthModal({
+                isVisible: true,
+                title: "Like a Tweet to share the love.",
+                subTitle: `Join tweetX to let ${user.name} know you like their Tweet`,
+                icon: BsFillHeartFill,
+            });
+            return false;
         }
         toggleLike.mutate({
             id,
         });
+        return true;
     }
     return (
         <li className="">
@@ -116,10 +132,17 @@ const TweetCard = ({
                         />
                         <button
                             onClick={(e) => {
-                                if (session.status !== "authenticated") {
-                                    return signIn();
-                                }
                                 e.stopPropagation();
+                                if (session.status !== "authenticated") {
+                                    if (!user.name) return alert("username not found");
+                                    return setShowAuthModal({
+                                        isVisible: true,
+                                        title: "Reply to join the conversation",
+                                        subTitle:
+                                            `Once you join tweetX, you can respont to ${user.name} Tweet.`,
+                                        icon: BsFillChatFill,
+                                    });
+                                }
                                 setIsCommentModalOpen(true);
                             }}
                             className="flex group items-center"
@@ -133,42 +156,50 @@ const TweetCard = ({
                     </div>
                 </div>
             </article>
-            <Modal open={isCommentModalOpen} setOpen={setIsCommentModalOpen}>
-                <section className="bg-white  w-full sm:w-[600px] px-4 pt-4 rounded-2xl dark:bg-black">
-                    <header className="mb-5 ">
-                        <XMarkIcon
-                            onClick={() => setIsCommentModalOpen(false)}
-                            className="w-9 hover:bg-zinc-800 rounded-full -ml-2 -mt-2 p-2 duration-200 transition-colors  h-9 cursor-pointer text-gray-500 dark:text-zinc-100"
-                        />
-                    </header>
-                    <article className="flex items-start gap-2.5">
-                        <ProfileImage src={user.image} />
-                        <div className="flex flex-grow flex-col">
-                            <div className="flex gap-1">
-                                <span className="font-bold dark:text-zinc-100">
-                                    {user.name}
-                                </span>
-                                <span className="text-gray-500 dark:text-zinc-400">
-                                    &middot;
-                                </span>
-                                <span className="text-gray-500 dark:text-zinc-400">
-                                    {dayjs(createdAt).fromNow()}
-                                </span>
-                            </div>
-                            <pre className="dark:text-zinc-100">{content}</pre>
-                        </div>
-                    </article>
-                    {user.name &&
-                        (
-                            <NewCommentForm
-                                closeModal={() => setIsCommentModalOpen(false)}
-                                id={id}
-                                postUser={user.name}
-                            />
-                        )}
-                </section>
-            </Modal>
+            <CommentModal
+                open={isCommentModalOpen}
+                setOpen={setIsCommentModalOpen}
+                user={user}
+                content={content}
+                createdAt={createdAt}
+            />
+            <NoAuthModal
+                setOpen={() =>
+                    setShowAuthModal((prev) => ({ ...prev, isVisible: false }))}
+                subTitle={showAuthModal.subTitle}
+                title={showAuthModal.title}
+                icon={showAuthModal.icon}
+                open={showAuthModal.isVisible}
+            />
         </li>
+    );
+};
+
+type MiniPostProps = {
+    user: Tweet["user"];
+    content: string;
+    createdAt: Date;
+};
+
+export const MiniPost = ({ user, content, createdAt }: MiniPostProps) => {
+    return (
+        <article className="flex items-start gap-2.5 ">
+            <ProfileImage src={user.image} />
+            <div className="flex flex-grow flex-col">
+                <div className="flex gap-1">
+                    <span className="font-bold dark:text-zinc-100">
+                        {user.name}
+                    </span>
+                    <span className="text-gray-500 dark:text-zinc-400">
+                        &middot;
+                    </span>
+                    <span className="text-gray-500 dark:text-zinc-400">
+                        {dayjs(createdAt).fromNow()}
+                    </span>
+                </div>
+                <pre className="dark:text-zinc-100">{content}</pre>
+            </div>
+        </article>
     );
 };
 
@@ -176,7 +207,7 @@ type HeartButtonProps = {
     likeCount: number;
     likedByMe: boolean;
     isLoading: boolean;
-    onClick: () => void;
+    onClick: () => boolean;
 };
 
 const HeartButtonAnimated = ({
@@ -192,7 +223,8 @@ const HeartButtonAnimated = ({
             disabled={isLoading}
             onClick={(e) => {
                 e.stopPropagation();
-                onClick();
+                const goForward = onClick();
+                if (!goForward) return;
                 if (likedByMe) {
                     heartRef.current?.goToAndStop(1, true);
                     return;

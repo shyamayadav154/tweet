@@ -52,7 +52,7 @@ const twitter = localFont({
 });
 
 const Container = (
-    { children, session }: { children: ReactNode; session: Session | null },
+    { children }: { children: ReactNode; session: Session | null },
 ) => {
     return (
         <div

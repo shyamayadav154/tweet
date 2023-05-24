@@ -188,7 +188,7 @@ const FollowButton = ({
             onMouseLeave={() => setUnFollowText("Following")}
             disabled={isLoading}
             className={`px-3 ${isFollowing
-                    ? "text-black bg-white hover:bg-red-100 hover:border-red-300 hover:text-red-500 w-[106px]"
+                    ? "text-black bg-white hover:bg-red-100 dark:hover:border-red-500 dark:hover:bg-black hover:border-red-300 hover:text-red-500 w-[106px]"
                     : "bg-black text-white hover:bg-opacity-90"
                 } font-bold py-1.5 border rounded-full`}
         >
@@ -198,7 +198,7 @@ const FollowButton = ({
 };
 export default ProfilePage;
 
-export const getStaticProps = async (
+export const getStaticProps = (
     context: GetStaticPropsContext<{
         id: string;
     }>,
@@ -214,7 +214,6 @@ export const getStaticProps = async (
     }
 
     const ssg = ssgHelper();
-    await ssg.profile.getById.prefetch({ id });
 
     return {
         props: {
